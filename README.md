@@ -1,2 +1,2 @@
 # Maze-Generator
-This is a side project I worked on to hone my programming skill.
+This is a maze generator made by me for fun and to help understand fundamental algorithms such as depth first search.
