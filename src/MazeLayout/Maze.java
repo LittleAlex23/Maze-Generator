@@ -18,8 +18,8 @@ public class Maze {
     static int maxLevel;
     private boolean hasChanged;
     private boolean gameOver;
-    BufferedImage sheetLoader;
-    SpriteSheet sheet;
+    private BufferedImage sheetLoader;
+    private SpriteSheet sheet;
     public Maze(int maxLevel, int SIZE) throws IOException{
         BufferedImageLoader loader = new BufferedImageLoader();
         sheetLoader = loader.loadImage("/res/colors.png");

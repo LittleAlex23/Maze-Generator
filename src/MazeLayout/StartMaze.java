@@ -17,7 +17,7 @@ public class StartMaze {
             try{
                  levels = Integer.parseInt( JOptionPane.showInputDialog(
                     "how many level do you want? \n (must between 5 and 10,000)"));
-                if(5 < levels && levels < 10000)
+                if(2 < levels && levels < 10000)
                     break;
                 else
                     System.out.println("too big");
