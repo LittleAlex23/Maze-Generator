@@ -1,5 +1,6 @@
 package Controller;
 
+import MazeModel.Maze;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import MazeLayout.*;
@@ -12,7 +13,7 @@ public class Controller {
     public Controller(final MazeFrame frame, final Maze maze){
         
         // Initialize the maze
-        frame.expand(Maze.SIZE+2);
+        frame.expand(maze.getSize()+2, maze.getMaxlevel());
         frame.updateLevel(maze.getLevel());
         frame.updateStat(maze.getImage(), "start");
         
