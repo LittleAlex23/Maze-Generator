@@ -1,8 +1,7 @@
 package MazeLayout;
 
+import MazeModel.Maze;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -24,6 +23,8 @@ public class MazeFrame extends javax.swing.JFrame {
     /**
      * Creates new form MazeFrame
      */
+    private int SIZE;
+    private int MAXLEVEL;
     public MazeFrame() throws IOException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException, IllegalAccessException {
         String laf = UIManager.getSystemLookAndFeelClassName();
         UIManager.setLookAndFeel(laf);      
@@ -31,17 +32,18 @@ public class MazeFrame extends javax.swing.JFrame {
         getContentPane().setBackground(Color.red);
    }
     public void updateStat(BufferedImage[][] imageList, String str){
-        int length = (int)Math.sqrt(jPanel1.getWidth() * jPanel1.getHeight()/((Maze.SIZE+2)*(Maze.SIZE+2))) - 6;
-        for(int i = 0; i < Maze.SIZE; i++)
-            for(int j = 0; j < Maze.SIZE; j++){
-                   ((JLabel)jPanel1.getComponent((i+1) * (Maze.SIZE+2) + j+1)).setIcon(
+        int length = (int)Math.sqrt(jPanel1.getWidth() * jPanel1.getHeight()/((SIZE)*(SIZE))) - 6;
+        for(int i = 0; i < SIZE-2; i++)
+            for(int j = 0; j < SIZE-2; j++){
+                   ((JLabel)jPanel1.getComponent((i+1) * (SIZE) + j+1)).setIcon(
                            new ImageIcon(imageList[i][j].getScaledInstance(length, length,  java.awt.Image.SCALE_SMOOTH)));
             }
         statusLabel.setText("you are on: " + str);
     }
-    public void expand(int SIZE){
+    public void expand(int SIZE, int MAXLEVEL){
+        this.SIZE = SIZE;
+        this.MAXLEVEL = MAXLEVEL;
         jPanel1.setLayout(new GridLayout(SIZE,SIZE));
-     //   jPanel1.setSize(new Dimension(getWidth(), getWidth()));
         int area = SIZE * SIZE;
         JLabel lab;
         for(int i = 0; i < SIZE ; i++)
@@ -61,7 +63,7 @@ public class MazeFrame extends javax.swing.JFrame {
         this.setResizable(false);
     }
     public void updateLevel(int currentLevel){
-        levelLabel.setText("Floor: " + (currentLevel + 1) + "/" + Maze.maxLevel);
+        levelLabel.setText("Floor: " + (currentLevel + 1) + "/" + MAXLEVEL);
     }
     /**
      * This method is called from within the constructor to initialize the form.
