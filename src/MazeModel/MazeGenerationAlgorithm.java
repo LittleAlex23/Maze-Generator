@@ -14,7 +14,7 @@ public class MazeGenerationAlgorithm {
     private MazeCell[][][] Cell;
     private Stack<MazeCell> stack;
     private Queue<MazeCell> queue;
-    private SpriteSheet sheet;
+    private final SpriteSheet sheet;
     private boolean[][][] visited;
     public MazeGenerationAlgorithm(){
         sheet = SpriteSheet.getInstance();

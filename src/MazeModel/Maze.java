@@ -18,8 +18,8 @@ public class Maze {
     private final int MAXLEVEL;
     private boolean hasChanged;
     private boolean gameOver;
-    private BufferedImage sheetLoader;
-    private SpriteSheet sheet;
+    private final BufferedImage sheetLoader;
+    private final SpriteSheet sheet;
     public Maze(int MAXLEVEL, int SIZE) throws IOException{
         MazeCell.SIZE = SIZE;
         MazeCell.MAXLEVEL = MAXLEVEL;

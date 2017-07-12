@@ -32,8 +32,9 @@ public class Controller {
                     // Check for certain states
                     if(maze.hasFloorChanged())
                         frame.updateLevel(maze.getLevel());
-                    frame.updateStat(maze.getImage(), maze.getCurrentCell().getName().toString());
+                    frame.updateStat(maze.getImage(), maze.getCurrentCell().getName());
                     
+                    // Toggle game over
                     if(maze.isGameOver()){
                         frame.removeKeyListener(this);
                         JOptionPane.showMessageDialog(frame, "Game Over");

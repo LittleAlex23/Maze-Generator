@@ -4,14 +4,12 @@ import java.io.IOException;
 import Controller.Controller;
 import MazeLayout.MazeFrame;
 import javax.swing.JOptionPane;
-import javax.swing.UnsupportedLookAndFeelException;
 /**
  *
  * @author Alexandre
  */
 public class StartMaze {
-    public static void main(String[] args) throws IOException, UnsupportedLookAndFeelException, InstantiationException, ClassNotFoundException, IllegalAccessException{
-        
+    public static void main(String[] args) throws IOException{
         int levels;
         while(true){
             try{

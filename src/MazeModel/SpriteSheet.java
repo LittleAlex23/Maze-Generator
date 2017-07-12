@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage;
  */
 public class SpriteSheet {
     public static SpriteSheet sheet;
-    private Tile[] tile = new Tile[15];
+    private final Tile[] tile = new Tile[15];
     private SpriteSheet(){}
     public static SpriteSheet getInstance(){
         if(sheet == null)
@@ -35,9 +35,9 @@ public class SpriteSheet {
         tile[14] = new Tile(image.getSubimage(252, 36, 36, 36), "onCyan");
     }
     public Tile getTile(String name){
-        for(int i = 0; i < tile.length; i++)
-            if(tile[i].getName().equals(name))
-                return tile[i];
+        for (Tile tile1 : tile)
+            if (tile1.getName().equals(name)) 
+                return tile1;
         return null;
     }
 }

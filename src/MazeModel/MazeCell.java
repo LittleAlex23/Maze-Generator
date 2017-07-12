@@ -7,13 +7,13 @@ package MazeModel;
 public class MazeCell{
     private MazeCell[] neighbor;
     private boolean isVertex;
-    private int row;
-    private int column;
-    private int level;
+    private final int row;
+    private final int column;
+    private final int level;
     private MazeCell previous;
     private Tile image;
     private Tile permImage;
-    private int ID;
+    private final int ID;
     static int SIZE;
     static int MAXLEVEL;
     protected MazeCell(int level, int ID){
