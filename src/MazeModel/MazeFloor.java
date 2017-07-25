@@ -8,8 +8,8 @@ import javax.swing.JPanel;
  * @author Alexandre
  */
 public class MazeFloor extends JPanel {
-    private MazeCell[][] floorCells;
-    private BufferedImage[][] floorImage;
+    private final MazeCell[][] floorCells;
+    private final BufferedImage[][] floorImage;
     protected MazeFloor(int level, int COLUMNS){
         floorImage = new BufferedImage[COLUMNS][COLUMNS];
         floorCells = new MazeCell[COLUMNS][COLUMNS];
@@ -29,7 +29,7 @@ public class MazeFloor extends JPanel {
     protected void generateFloor(){
         for(int i = 0; i < floorCells.length; i++)
             for(int j = 0; j < floorCells[i].length; j++)
-                floorImage[i][j] = floorCells[i][j].getImage().getImage();
+                floorImage[i][j] = floorCells[i][j].getCurrentImage().getImage();
     }
     // Return the colors of the cell for this floor
     protected BufferedImage[][] getImage(){

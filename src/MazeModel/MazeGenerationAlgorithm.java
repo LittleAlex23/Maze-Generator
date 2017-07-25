@@ -13,7 +13,6 @@ import java.util.Stack;
 public class MazeGenerationAlgorithm {
     private MazeCell[][][] Cell;
     private Stack<MazeCell> stack;
-    private Queue<MazeCell> queue;
     private final SpriteSheet sheet;
     private boolean[][][] visited;
     public MazeGenerationAlgorithm(){
@@ -29,93 +28,46 @@ public class MazeGenerationAlgorithm {
     }
     
     // Helper function for DFS
-    public void shuffleCells(MazeCell previous){
+    public void shuffleCells(MazeCell p){
         LinkedList<MazeCell> openList;
         MazeCell[] neighbor;
         boolean meetEnd = false;
         while(!stack.isEmpty()){
-            neighbor = previous.getNeighbor();
+            neighbor = p.getNeighbor();
             openList = new LinkedList<>();
             boolean hasNeighbor = false;
             
             // Add all cell's unvisited neighbors to the list;
             for(MazeCell n : neighbor){
                 if(!visited[n.getLevel()][n.getX()][n.getY()]){
-                    if(!meetEnd || !n.getName().equals("red")){
+                    if(!meetEnd || !n.getPermImageName().equals("red")){
                         hasNeighbor = true;
                         openList.add(n);
                     }
                 }
             }
             
-            // If current cell has a neighbor
+            // Current cell has at least one neighbor
             if(hasNeighbor){
                 Collections.shuffle(openList);
                 MazeCell n = openList.get(0);
                 stack.push(n);
                 
                 // Check if the neighbor is not the end of the maze
-                if(!n.getName().equals("red"))
+                if(!n.getPermImageName().equals("red"))
                     n.assignTile(sheet.getTile("white"));
                 else
                     meetEnd = true;
                 // Add neighbor to the list
-                n.setPrevious(previous);
-                connectVertex(n, previous);
+                n.setPrevious(p);
+                connectVertex(n, p);
                 visited[n.getLevel()][n.getX()][n.getY()] = true;
-                previous = n;
+                p = n;
             }
             else
-                previous = stack.pop();
+                p = stack.pop();
         }
     }
-    
-    // Helper function for BFS
-    public void shuffleBFS(MazeCell previous){
-        LinkedList<MazeCell> openList;
-        boolean meetEnd = false;
-        boolean isHead = true;
-        while(!queue.isEmpty()){
-            if(isHead){
-                isHead = false;
-                previous = queue.poll();
-            }
-            openList = new LinkedList<>();
-            openList.addAll(Arrays.asList(previous.getNeighbor()));
-            Collections.shuffle(openList);
-            boolean hasNeighbor = false;
-            // Add all cell's unvisited neighbors to the list;
-            for(MazeCell n : openList){
-                if(!visited[n.getLevel()][n.getX()][n.getY()]){
-                    if(!meetEnd){
-                        hasNeighbor = true;
-                        if(!n.getName().equals("red"))
-                            n.assignTile(sheet.getTile("white"));
-                        else
-                            meetEnd = true;
-                        n.setPrevious(previous);
-                        connectVertex(n, previous);
-                        visited[n.getLevel()][n.getX()][n.getY()] = true;
-                    }
-                }
-            }
-            
-            // If current cell has a neighbor
-            if(hasNeighbor)
-                queue.addAll(openList);
-            previous = queue.poll();
-        }
-    }
-    public void runBFS(MazeCell[][][] cell, MazeCell source){
-        this.Cell = cell;
-        visited = new boolean [cell.length][cell[0].length][cell[0][0].length];
-        queue = new LinkedList<>();
-        queue.add(source);
-        visited[0][0][0] = true;
-        shuffleBFS(source);
-    }
-    
-    
     // Connect the two cells
     public void connectVertex(MazeCell current, MazeCell previous){
         int cX = current.getX();
@@ -148,19 +100,19 @@ public class MazeGenerationAlgorithm {
             if(level == 1){
                 
                 // Can go either up or down from the current cell
-                if(previous.getName().equals("orange")){
+                if(previous.getPermImageName().equals("orange")){
                     current.assignTile(sheet.getTile("orange"));
                     previous.assignTile(sheet.getTile("green"));
                 }
                 
                 // Can only go up
-                else if(current.getName().equals("white")){
+                else if(current.getPermImageName().equals("white")){
                     current.assignTile(sheet.getTile("orange"));
                     previous.assignTile(sheet.getTile("pink"));
                 }
                 
                 // Can't go up to the end cell
-                else if(!previous.getName().equals("red"))
+                else if(!previous.getPermImageName().equals("red"))
                     previous.assignTile(sheet.getTile("orange"));
             }
             
@@ -168,13 +120,13 @@ public class MazeGenerationAlgorithm {
             else{
                 
                 // Can go either up or down from the current cell
-                if(previous.getName().equals("pink")){
+                if(previous.getPermImageName().equals("pink")){
                     current.assignTile(sheet.getTile("pink"));
                     previous.assignTile(sheet.getTile("green"));
                 }
                 
                 // Can only go down
-                else if(current.getName().equals("white")){
+                else if(current.getPermImageName().equals("white")){
                     current.assignTile(sheet.getTile("pink"));
                     previous.assignTile(sheet.getTile("orange"));
                 }

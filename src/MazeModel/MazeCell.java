@@ -113,10 +113,10 @@ public class MazeCell{
         if(level-1 >= 0)
             neighbor[count++] = grid[level-1][row][column];
     }
-    protected Tile getImage(){
+    protected Tile getCurrentImage(){
         return image;
     }
-    public String getName(){
+    public String getPermImageName(){
         return permImage.getName();
     }
     protected Tile getPermImage(){

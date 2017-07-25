@@ -76,44 +76,49 @@ public class Maze {
         runAlgorithm();
     }
     // Move the player based on key input
-    public void move(int direction){
+    public void move(int d){
         
         // Return if the key is invalid
-        if(direction != KeyEvent.VK_S &&  direction != KeyEvent.VK_W && direction != KeyEvent.VK_A
-            && direction != KeyEvent.VK_D && direction != KeyEvent.VK_E && direction != KeyEvent.VK_C)
+        if(d != KeyEvent.VK_S &&  
+            d != KeyEvent.VK_W && 
+            d != KeyEvent.VK_A && 
+            d != KeyEvent.VK_D && 
+            d != KeyEvent.VK_E && 
+            d != KeyEvent.VK_C)
             return;
         
         MazeCell next;
         int x = currentCell.getX();
         int y = currentCell.getY();
         hasChanged = false;
-        switch(direction){
+        char c = (char)d;
+        switch(c){
            // GO DOWN
-           case 83:
+           case 'S':
                if(x+1 >= SIZE)
                    return;
                next = allCells[currentLevel][x+1][y];
                break;
                
            // GO UP
-           case 87:
+           case 'W':
                if(x-1 < 0)
                    return;
                next = allCells[currentLevel][x-1][y];
                break;
                
            // GO LEFT
-           case 65:
+           case 'A':
                if(y-1 < 0)
                    return;
                next = allCells[currentLevel][x][y-1];
                break;
                
            // GO UPSTAIRS
-           case 69:
+           case 'E':
                if(currentLevel + 1 >= MAXLEVEL)
                    return;
-               if(currentCell.getName().equals("pink") || currentCell.getName().equals("green")){
+               if(currentCell.getPermImageName().equals("pink") || currentCell.getPermImageName().equals("green")){
                    currentLevel++;
                    hasChanged = true;
                }
@@ -121,10 +126,10 @@ public class Maze {
                break;
           
            // GO DOWNSTAIRS
-           case 67:
+           case 'C':
                if(currentLevel -1 < 0)
                    return;
-               if(currentCell.getName().equals("orange") || currentCell.getName().equals("green")){
+               if(currentCell.getPermImageName().equals("orange") || currentCell.getPermImageName().equals("green")){
                    currentLevel--;
                    hasChanged = true;
                }
@@ -140,12 +145,12 @@ public class Maze {
        }
         
         // Prevent stepping on the black square
-        if(!next.getName().equals("black")){
+        if(!next.getPermImageName().equals("black")){
             currentCell.changeImage(currentCell.getPermImage());
             currentCell = next;
             currentCell.changeImage(sheet.getTile("onWhite"));
            // The next square is the exit
-           if(currentCell.getName().equals("red"))
+           if(currentCell.getPermImageName().equals("red"))
                gameOver = true;
        }
     }
@@ -188,7 +193,7 @@ public class Maze {
     // Show the path from the start to the end
     public void showPath(){
         MazeCell current = red.getPrevious();
-        while(!current.getName().equals("magenta")){
+        while(!current.getPermImageName().equals("magenta")){
             current.changeImage(sheet.getTile("cyan"));
             current = current.getPrevious();
         }
