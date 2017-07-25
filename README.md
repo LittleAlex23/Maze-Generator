@@ -1,2 +1,5 @@
 # Maze-Generator
 A personal project I worked on for fun and to test my Java programming skill.
+
+Preview:
+![preview](https://user-images.githubusercontent.com/26098614/28584953-40c699bc-7134-11e7-996d-a81d267fec51.png)
