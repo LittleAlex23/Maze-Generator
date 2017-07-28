@@ -1,12 +1,15 @@
 package MazeModel;
 
+import java.util.ArrayList;
+import static MazeModel.MazeFloor.COLUMNS;
+import static MazeModel.MazeFloor.MAXLEVEL;
+
 /**
  *
  * @author Alexandre
  */
 public class MazeCell{
-    private MazeCell[] neighbor;
-    private boolean isVertex;
+    private final ArrayList<MazeCell> neighbor;
     private final int row;
     private final int column;
     private final int level;
@@ -14,20 +17,20 @@ public class MazeCell{
     private Tile image;
     private Tile permImage;
     private final int ID;
-    static int SIZE;
-    static int MAXLEVEL;
+    private static final SpriteSheet SHEET;
+    static{
+        SHEET = SpriteSheet.getInstance();
+    }
     protected MazeCell(int level, int ID){
-        image = permImage = SpriteSheet.getInstance().getTile("black");
+        neighbor = new ArrayList<>(4);
+        image = permImage = Tile.BLACK;
         this.level = level;
         this.ID = ID;
-        row = ID/SIZE;
-        column = ID%SIZE;
-        
-        if(row%2 == 0 && column%2 == 0)
-            isVertex =true;
+        row = ID/COLUMNS;
+        column = ID%COLUMNS;
     }
     protected boolean isVertex(){
-        return isVertex;
+        return row%2 == 0 && column%2 == 0;
     }
     protected void changeImage(Tile image){
         this.image = image;
@@ -39,9 +42,13 @@ public class MazeCell{
     protected void assignTile(Tile image){
         this.image = permImage = image;
     }
+    protected void resetTile(){
+        if(!permImage.equals(Tile.BLACK))
+            this.image = permImage = Tile.BLACK;
+    }
     
     // Return the list of neighbors of current cell;
-    protected MazeCell[] getNeighbor(){
+    protected ArrayList<MazeCell> getNeighbor(){
         return neighbor;
     }
     protected int getX(){
@@ -66,54 +73,33 @@ public class MazeCell{
     }
     
     // Assign cell neighbors 
-    protected void setNeighbor(MazeCell[][][] grid){
+    protected void assignNeighbor(MazeCell[][][] cell){
+        // Player at start position can move either to the east or south.
         if(ID == 0 && level == 0){
-            neighbor = new MazeCell[2];
-            neighbor[0] = grid[level][row][column+2];
-            neighbor[1] = grid[level][row + 2][column];
+            neighbor.add(cell[level][row][column+2]);
+            neighbor.add(cell[level][row + 2][column]);
             return;
         }
-        
-        int count = 0;
+        // NORTH NEIGHBOR
         if(row-2 >= 0)
-            count++;
-        // EAST NEIGHTBOR
-        if(column+2 < SIZE)
-            count++;
+            neighbor.add(cell[level][row - 2][column]);
+        // EAST NEIGHBOR
+        if(column+2 < COLUMNS)
+            neighbor.add(cell[level][row][column+2]);
         // SOUTH NEIGHBOR
-        if(row+2 < SIZE)
-            count++;
+        if(row+2 < COLUMNS)
+            neighbor.add(cell[level][row + 2][column]);
         // WEST NEIGHBOR
         if(column-2 >= 0)
-            count++;
+            neighbor.add(cell[level][row][column-2]);
         // TOP NEIGHBOR
         if(level+1 < MAXLEVEL)
-            count++;
+            neighbor.add(cell[level+1][row][column]);
         // BOTTOM NEIGHBOR
         if(level-1 >= 0)
-            count++;
-        neighbor = new MazeCell[count];
-        
-        count = 0;
-        if(row-2 >= 0)
-            neighbor[count++] =grid[level][row - 2][column];
-        // EAST NEIGHTBOR
-        if(column+2 < SIZE)
-            neighbor[count++] = grid[level][row][column+2];
-        // SOUTH NEIGHBOR
-        if(row+2 < SIZE)
-            neighbor[count++] = grid[level][row + 2][column];
-        // WEST NEIGHBOR
-        if(column-2 >= 0)
-            neighbor[count++] = grid[level][row][column-2];
-        // TOP NEIGHBOR
-        if(level+1 < MAXLEVEL)
-            neighbor[count++] = grid[level+1][row][column];
-        // BOTTOM NEIGHBOR
-        if(level-1 >= 0)
-            neighbor[count++] = grid[level-1][row][column];
+            neighbor.add(cell[level-1][row][column]);
     }
-    protected Tile getCurrentImage(){
+    protected Tile getTile(){
         return image;
     }
     public String getPermImageName(){

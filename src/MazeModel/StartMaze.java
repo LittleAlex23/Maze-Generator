@@ -12,6 +12,7 @@ public class StartMaze {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
+                frame.setLocationRelativeTo(null);
                 frame.setVisible(true);
             }
         });
