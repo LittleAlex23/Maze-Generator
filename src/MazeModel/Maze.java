@@ -19,6 +19,9 @@ public class Maze {
     private boolean gameOver;
     private final SpriteSheet sheet;
     public static int algorithmID = 0;
+    private MazeCell current;
+    private MazeCell previous;
+    private boolean floorChanged = true;
     public Maze(MazeFloor[] floors) throws IOException{
         floor = floors;
         sheet = SpriteSheet.getInstance();
@@ -31,7 +34,7 @@ public class Maze {
     public final void init(){
         currentLevel = 0;
         // Set up the player's initial position
-        currentCell = allCells[0][0][0];
+        previous = current = currentCell = allCells[0][0][0];
         currentCell.assignTile(Tile.ONWHITE, Tile.START);
         
         // The cell the player has to reach
@@ -50,9 +53,14 @@ public class Maze {
             }
         }
     }
+    public int[] getCoord(){
+        return new int[]{previous.getX(), previous.getY(), current.getX(), current.getY()};
+    }
+    public Tile[] getPairs(){
+         return new Tile[]{previous.getPermImage(), current.getTile()};
+    }
     // Move the player based on key input
     public void move(int d){
-        
         // Return if the key is invalid
         if(d != KeyEvent.VK_S &&  
             d != KeyEvent.VK_W && 
@@ -61,8 +69,6 @@ public class Maze {
             d != KeyEvent.VK_E && 
             d != KeyEvent.VK_C)
             return;
-        
-        MazeCell next;
         int x = currentCell.getX();
         int y = currentCell.getY();
         hasChanged = false;
@@ -72,21 +78,21 @@ public class Maze {
            case 'S':
                if(x+1 >= MazeFloor.COLUMNS)
                    return;
-               next = allCells[currentLevel][x+1][y];
+               current = allCells[currentLevel][x+1][y];
                break;
                
            // GO UP
            case 'W':
                if(x-1 < 0)
                    return;
-               next = allCells[currentLevel][x-1][y];
+               current = allCells[currentLevel][x-1][y];
                break;
                
            // GO LEFT
            case 'A':
                if(y-1 < 0)
                    return;
-               next = allCells[currentLevel][x][y-1];
+               current = allCells[currentLevel][x][y-1];
                break;
                
            // GO UPSTAIRS
@@ -95,9 +101,9 @@ public class Maze {
                    return;
                if(currentCell.getPermImageName().equals("pink") || currentCell.getPermImageName().equals("green")){
                    currentLevel++;
-                   hasChanged = true;
+                   floorChanged = hasChanged = true;
                }
-               next = allCells[currentLevel][x][y];
+               current = allCells[currentLevel][x][y];
                break;
           
            // GO DOWNSTAIRS
@@ -106,28 +112,34 @@ public class Maze {
                    return;
                if(currentCell.getPermImageName().equals("orange") || currentCell.getPermImageName().equals("green")){
                    currentLevel--;
-                   hasChanged = true;
+                   floorChanged = hasChanged = true;
                }
-               next = allCells[currentLevel][x][y];
+               current = allCells[currentLevel][x][y];
                break;    
            
            // GO RIGHT 
            default:
                if(y+1 >= COLUMNS)
                    return;
-               next = allCells[currentLevel][x][y+1];
+               current = allCells[currentLevel][x][y+1];
                break;
-       }
+        }
         
         // Prevent stepping on the BLACK square
-        if(!next.getPermImageName().equals("black")){
+        if(!current.getPermImageName().equals("black")){
             currentCell.changeImage(currentCell.getPermImage());
-            currentCell = next;
+                previous = currentCell;
+            currentCell = current;
             currentCell.changeImage(Tile.ONWHITE);
            // The next square is the exit
            if(currentCell.getPermImageName().equals("red"))
                gameOver = true;
        }
+        // Previous cell should be the current position if player moves to different floor.
+        else if(floorChanged){
+            floorChanged = false;
+            previous = current;
+        }
     }
     // Check if the player has reached the end
     public boolean isGameOver(){
@@ -137,11 +149,6 @@ public class Maze {
     // Move up or down the floor
     public boolean hasFloorChanged(){
         return hasChanged;
-    }
-    
-    // Return all the floors in the maze
-    public MazeFloor[] getFloors(){
-        return floor;
     }
     public Tile[][] getTile(){
         MazeFloor f = floor[currentLevel];
@@ -161,7 +168,6 @@ public class Maze {
     // Run prim's algorithm to generate the maze
     public void runAlgorithm(){
         MazeGenerationAlgorithm algorithm = new MazeGenerationAlgorithm();
-        System.out.println(algorithmID);
         switch(algorithmID){
             case 1:
                 algorithm.runPrim(allCells, currentCell);
@@ -172,10 +178,10 @@ public class Maze {
     }
     // Show the path from the start to the end
     public void showPath(){
-        MazeCell current = red.getPrevious();
-        while(!current.getPermImageName().equals("magenta")){
-            current.changeImage(Tile.CYAN);
-            current = current.getPrevious();
+        MazeCell c = red.getPrevious();
+        while(!c.getPermImageName().equals("magenta")){
+            c.changeImage(Tile.CYAN);
+            c = c.getPrevious();
         }
     }
     

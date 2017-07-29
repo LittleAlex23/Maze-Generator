@@ -21,7 +21,6 @@ public class MazeFloor extends JPanel {
     protected MazeCell[][] getFloorCells(){
         return floorCells;
     }
-    
     // update the current status floor 
     protected void updateFloor(){
         for(int i = 0; i < floorCells.length; i++)

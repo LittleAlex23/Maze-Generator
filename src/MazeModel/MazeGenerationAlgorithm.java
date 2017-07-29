@@ -12,11 +12,7 @@ import java.util.Stack;
 public class MazeGenerationAlgorithm {
     private MazeCell[][][] Cell;
     private Stack<MazeCell> stack;
-    private final SpriteSheet sheet;
     private boolean[][][] visited;
-    public MazeGenerationAlgorithm(){
-        sheet = SpriteSheet.getInstance();
-    }
     
     // Prim's algorithm
     public void runPrim(MazeCell[][][] cell, MazeCell source){
@@ -69,7 +65,6 @@ public class MazeGenerationAlgorithm {
             toggle = true;
         }
     }
-    
     public void runDFS(MazeCell[][][] cell, MazeCell source){
         this.Cell = cell;
         visited = new boolean [cell.length][cell[0].length][cell[0][0].length];

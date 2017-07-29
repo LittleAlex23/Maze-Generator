@@ -17,13 +17,8 @@ public class MazeCell{
     private Tile image;
     private Tile permImage;
     private final int ID;
-    private static final SpriteSheet SHEET;
-    static{
-        SHEET = SpriteSheet.getInstance();
-    }
     protected MazeCell(int level, int ID){
         neighbor = new ArrayList<>(4);
-        image = permImage = Tile.BLACK;
         this.level = level;
         this.ID = ID;
         row = ID/COLUMNS;
@@ -43,7 +38,7 @@ public class MazeCell{
         this.image = permImage = image;
     }
     protected void resetTile(){
-        if(!permImage.equals(Tile.BLACK))
+        if(permImage == null || !permImage.equals(Tile.BLACK))
             this.image = permImage = Tile.BLACK;
     }
     
@@ -100,9 +95,13 @@ public class MazeCell{
             neighbor.add(cell[level-1][row][column]);
     }
     protected Tile getTile(){
+        if(image == null)
+            image = permImage = Tile.BLACK;
         return image;
     }
     public String getPermImageName(){
+        if(permImage == null)
+            image = permImage = Tile.BLACK;
         return permImage.getName();
     }
     protected Tile getPermImage(){

@@ -28,33 +28,58 @@ public class MazeFrame extends javax.swing.JFrame {
     private int SIZE;
     private int MAXLEVEL;
     private Maze maze;
+    private JLabel[][] tile;
+    private ImageIcon[][] image;
     public MazeFrame() throws IOException{   
         initComponents();
    }
+    public void move(String str){
+        int length = (int)Math.ceil(Math.sqrt(jPanel1.getWidth() * jPanel1.getHeight()/(SIZE*SIZE)));
+
+        Tile[] pair = maze.getPairs();
+        int[] coord = maze.getCoord();
+        image[coord[0]][coord[1]].setImage(pair[0].getImage().getScaledInstance(length, length,  java.awt.Image.SCALE_SMOOTH));
+        image[coord[2]][coord[3]].setImage(pair[1].getImage().getScaledInstance(length, length,  java.awt.Image.SCALE_SMOOTH));
+        
+        tile[coord[0]+1][coord[1]+1].setIcon(image[coord[0]][coord[1]]);
+        tile[coord[2]+1][coord[3]+1].setIcon(image[coord[2]][coord[3]]);
+        
+        tile[coord[0]+1][coord[1]+1].setBackground(pair[0] == Tile.BLACK ? Color.BLACK : Color.WHITE);
+        tile[coord[2]+1][coord[3]+1].setBackground(pair[1] == Tile.BLACK ? Color.BLACK : Color.WHITE);
+        revalidate();    
+        repaint();
+        statusLabel.setText("you are on: " + str);
+    }
     public void updateStat(Tile[][] imageList, String str){
-        int length = (int)Math.sqrt(jPanel1.getWidth() * jPanel1.getHeight()/((SIZE)*(SIZE))) - 6;
+        int length = (int)Math.ceil(Math.sqrt(jPanel1.getWidth() * jPanel1.getHeight()/(SIZE*SIZE)));
         for(int i = 0; i < SIZE-2; i++)
             for(int j = 0; j < SIZE-2; j++){
-                   ((JLabel)jPanel1.getComponent((i+1) * (SIZE) + j+1)).setIcon(
-                           new ImageIcon(imageList[i][j].getImage().getScaledInstance(length, length,  java.awt.Image.SCALE_SMOOTH)));
+                image[i][j].setImage(imageList[i][j].getImage().getScaledInstance(length, length,  java.awt.Image.SCALE_SMOOTH));
+                tile[i+1][j+1].setIcon(image[i][j]);
+                tile[i+1][j+1].setBackground(imageList[i][j] == Tile.BLACK ? Color.BLACK : Color.WHITE);
+                revalidate();    
+                repaint();
             }
         statusLabel.setText("you are on: " + str);
     }
+    // Add components to the frame once the size of the maze is determined
     public void expand(int SIZE, int MAXLEVEL){
         this.SIZE = SIZE;
         this.MAXLEVEL = MAXLEVEL;
         jPanel1.setLayout(new GridLayout(SIZE,SIZE));
-        int area = SIZE * SIZE;
-        JLabel lab;
+        tile = new JLabel[SIZE][SIZE];
+        image = new ImageIcon[SIZE-2][SIZE-2];
         for(int i = 0; i < SIZE ; i++)
             for(int j = 0; j < SIZE; j++){
-                lab = new JLabel();
-                lab.setOpaque(true);
-                if(0 <= i && i < SIZE || 1 <= j && j < SIZE - 1 || 
-                        SIZE <= i && i < area || SIZE < j && j < area)
-                    lab.setBackground(Color.BLACK);
-                jPanel1.add(lab);
-                
+                tile[i][j] = new JLabel();
+                tile[i][j].setOpaque(true);
+                if(j == 0 || i == 0 || j == SIZE-1 || i == SIZE - 1)
+                    tile[i][j].setBackground(Color.BLACK);
+                else{
+                    image[i-1][j-1] = new ImageIcon();
+                    tile[i][j].setIcon(image[i-1][j-1]);
+                }
+                jPanel1.add(tile[i][j]);
             }
         add(jPanel1);
         add(jPanel2);
@@ -236,8 +261,8 @@ public class MazeFrame extends javax.swing.JFrame {
         int levels = Integer.parseInt(levelField.getText());
         if(5 <= levels && levels <= 10000){
                 System.out.println("Generating maze...");
-                maze = MazeBuilder.buildMaze(levels, 7);
-                generateGame(levels, 9);
+                maze = MazeBuilder.buildMaze(levels, 9);
+                generateGame(levels, 11);
         }
         else
             System.out.println("Not within range");
@@ -255,20 +280,26 @@ public class MazeFrame extends javax.swing.JFrame {
     private class KeyList extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e){
-            if(e.getKeyCode() == KeyEvent.VK_Q)
+            if(e.getKeyCode() == KeyEvent.VK_Q){
                 maze.showPath();
+                updateStat(maze.getTile(), maze.getCurrentCell().getPermImageName());
+                return;
+            }
             else if(e.getKeyCode() == KeyEvent.VK_R){
                 updateLevel(maze.getLevel());
                 maze.resetCell();
                 maze.init();
+                updateStat(maze.getTile(), maze.getCurrentCell().getPermImageName());
             }
             maze.move(e.getKeyCode());
 
             // Check for certain states
-            if(maze.hasFloorChanged())
+            if(maze.hasFloorChanged()){
                 updateLevel(maze.getLevel());
-            updateStat(maze.getTile(), maze.getCurrentCell().getPermImageName());
-
+                updateStat(maze.getTile(), maze.getCurrentCell().getPermImageName());
+            }
+            else
+                move(maze.getCurrentCell().getPermImageName());
             // Toggle game over
             if(maze.isGameOver()){
                 statusLabel.setText("GAME OVER!");
