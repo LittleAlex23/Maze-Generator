@@ -1,16 +1,14 @@
 package MazeView;
 
 import MazeModel.Maze;
-import MazeModel.MazeBuilder;
 import MazeModel.Tile;
 import java.awt.Color;
 import java.awt.GridLayout;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JTextField;
 
 /*
  * To change this template, choose Tools | Templates
@@ -27,17 +25,13 @@ public class MazeFrame extends javax.swing.JFrame {
      */
     private int SIZE;
     private int MAXLEVEL;
-    private Maze maze;
     private JLabel[][] tile;
     private ImageIcon[][] image;
     public MazeFrame() throws IOException{   
         initComponents();
    }
-    public void move(String str){
-        int length = (int)Math.ceil(Math.sqrt(jPanel1.getWidth() * jPanel1.getHeight()/(SIZE*SIZE)));
-
-        Tile[] pair = maze.getPairs();
-        int[] coord = maze.getCoord();
+    public void move(String str, Tile[] pair, int[] coord){
+        int length = (int)Math.ceil(Math.sqrt(mazePanel.getWidth() * mazePanel.getHeight()/(SIZE*SIZE)));
         image[coord[0]][coord[1]].setImage(pair[0].getImage().getScaledInstance(length, length,  java.awt.Image.SCALE_SMOOTH));
         image[coord[2]][coord[3]].setImage(pair[1].getImage().getScaledInstance(length, length,  java.awt.Image.SCALE_SMOOTH));
         
@@ -51,7 +45,7 @@ public class MazeFrame extends javax.swing.JFrame {
         statusLabel.setText("you are on: " + str);
     }
     public void updateStat(Tile[][] imageList, String str){
-        int length = (int)Math.ceil(Math.sqrt(jPanel1.getWidth() * jPanel1.getHeight()/(SIZE*SIZE)));
+        int length = (int)Math.ceil(Math.sqrt(mazePanel.getWidth() * mazePanel.getHeight()/(SIZE*SIZE)));
         for(int i = 0; i < SIZE-2; i++)
             for(int j = 0; j < SIZE-2; j++){
                 image[i][j].setImage(imageList[i][j].getImage().getScaledInstance(length, length,  java.awt.Image.SCALE_SMOOTH));
@@ -66,7 +60,7 @@ public class MazeFrame extends javax.swing.JFrame {
     public void expand(int SIZE, int MAXLEVEL){
         this.SIZE = SIZE;
         this.MAXLEVEL = MAXLEVEL;
-        jPanel1.setLayout(new GridLayout(SIZE,SIZE));
+        mazePanel.setLayout(new GridLayout(SIZE,SIZE));
         tile = new JLabel[SIZE][SIZE];
         image = new ImageIcon[SIZE-2][SIZE-2];
         for(int i = 0; i < SIZE ; i++)
@@ -79,12 +73,12 @@ public class MazeFrame extends javax.swing.JFrame {
                     image[i-1][j-1] = new ImageIcon();
                     tile[i][j].setIcon(image[i-1][j-1]);
                 }
-                jPanel1.add(tile[i][j]);
+                mazePanel.add(tile[i][j]);
             }
-        add(jPanel1);
-        add(jPanel2);
+        add(mazePanel);
+        add(statusPanel);
         add(jScrollPane1);
-        add(jPanel3);
+        add(selectPanel);
         jComboBox.setEnabled(false);
         levelField.setEnabled(false);
         this.setFocusable(true);
@@ -104,11 +98,11 @@ public class MazeFrame extends javax.swing.JFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
-        jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
+        mazePanel = new javax.swing.JPanel();
+        statusPanel = new javax.swing.JPanel();
         levelLabel = new javax.swing.JLabel();
         statusLabel = new javax.swing.JLabel();
-        jPanel3 = new javax.swing.JPanel();
+        selectPanel = new javax.swing.JPanel();
         levelField = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jComboBox = new javax.swing.JComboBox<>();
@@ -132,18 +126,18 @@ public class MazeFrame extends javax.swing.JFrame {
         jTextArea1.setFocusable(false);
         jScrollPane1.setViewportView(jTextArea1);
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout mazePanelLayout = new javax.swing.GroupLayout(mazePanel);
+        mazePanel.setLayout(mazePanelLayout);
+        mazePanelLayout.setHorizontalGroup(
+            mazePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        mazePanelLayout.setVerticalGroup(
+            mazePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
-        jPanel2.setBackground(new java.awt.Color(0, 0, 0));
+        statusPanel.setBackground(new java.awt.Color(0, 0, 0));
 
         levelLabel.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         levelLabel.setForeground(new java.awt.Color(255, 204, 0));
@@ -154,29 +148,23 @@ public class MazeFrame extends javax.swing.JFrame {
         statusLabel.setForeground(new java.awt.Color(255, 255, 51));
         statusLabel.setText("You are on :");
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        javax.swing.GroupLayout statusPanelLayout = new javax.swing.GroupLayout(statusPanel);
+        statusPanel.setLayout(statusPanelLayout);
+        statusPanelLayout.setHorizontalGroup(
+            statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(statusPanelLayout.createSequentialGroup()
                 .addComponent(levelLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(statusLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 259, Short.MAX_VALUE))
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        statusPanelLayout.setVerticalGroup(
+            statusPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(levelLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 59, Short.MAX_VALUE)
             .addComponent(statusLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
-        jPanel3.setBackground(new java.awt.Color(204, 204, 255));
-        jPanel3.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-
-        levelField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                levelFieldActionPerformed(evt);
-            }
-        });
+        selectPanel.setBackground(new java.awt.Color(204, 204, 255));
+        selectPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         jLabel1.setText("<html>Select Max Floor: </html>");
 
@@ -189,31 +177,31 @@ public class MazeFrame extends javax.swing.JFrame {
 
         jLabel3.setText("Select Algorithm:");
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
+        javax.swing.GroupLayout selectPanelLayout = new javax.swing.GroupLayout(selectPanel);
+        selectPanel.setLayout(selectPanelLayout);
+        selectPanelLayout.setHorizontalGroup(
+            selectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(selectPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(selectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(selectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
+                    .addGroup(selectPanelLayout.createSequentialGroup()
                         .addComponent(levelField, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))))
         );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
+        selectPanelLayout.setVerticalGroup(
+            selectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(selectPanelLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(selectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(jComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(selectPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(levelField))
                 .addGap(6, 6, 6))
@@ -225,87 +213,38 @@ public class MazeFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(statusPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(mazePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(selectPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(mazePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(statusPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(selectPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
         setBounds(0, 0, 657, 504);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void generateGame(int levels, int size){
-        // Initialize the maze
-        expand(size, levels);
-        updateLevel(maze.getLevel());
-        updateStat(maze.getTile(), "start");
-        
-        // Register the key lister and handle a key event.
-        addKeyListener(new KeyList());
-    }
-    private void levelFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_levelFieldActionPerformed
-        try{
-        int levels = Integer.parseInt(levelField.getText());
-        if(5 <= levels && levels <= 10000){
-                System.out.println("Generating maze...");
-                maze = MazeBuilder.buildMaze(levels, 9);
-                generateGame(levels, 11);
-        }
-        else
-            System.out.println("Not within range");
-        }
-        catch(NumberFormatException e){
-            levelField.setText("");
-        } catch (IOException ex) {
-        }
-    }//GEN-LAST:event_levelFieldActionPerformed
-
+  
+    public JTextField getLevelField(){
+        return levelField;
+    }   
     private void jComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxActionPerformed
         JComboBox c = (JComboBox)evt.getSource();
         Maze.algorithmID = c.getSelectedIndex();
     }//GEN-LAST:event_jComboBoxActionPerformed
-    private class KeyList extends KeyAdapter {
-        @Override
-        public void keyPressed(KeyEvent e){
-            if(e.getKeyCode() == KeyEvent.VK_Q){
-                maze.showPath();
-                updateStat(maze.getTile(), maze.getCurrentCell().getPermImageName());
-                return;
-            }
-            else if(e.getKeyCode() == KeyEvent.VK_R){
-                updateLevel(maze.getLevel());
-                maze.resetCell();
-                maze.init();
-                updateStat(maze.getTile(), maze.getCurrentCell().getPermImageName());
-            }
-            maze.move(e.getKeyCode());
 
-            // Check for certain states
-            if(maze.hasFloorChanged()){
-                updateLevel(maze.getLevel());
-                updateStat(maze.getTile(), maze.getCurrentCell().getPermImageName());
-            }
-            else
-                move(maze.getCurrentCell().getPermImageName());
-            // Toggle game over
-            if(maze.isGameOver()){
-                statusLabel.setText("GAME OVER!");
-                removeKeyListener(this);
-            }
-        }
+    public void setGame(){
+        statusLabel.setText("GAME OVER!");
     }
     /**
      * @param args the command line arguments
@@ -315,13 +254,13 @@ public class MazeFrame extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> jComboBox;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField levelField;
     private javax.swing.JLabel levelLabel;
+    private javax.swing.JPanel mazePanel;
+    private javax.swing.JPanel selectPanel;
     private javax.swing.JLabel statusLabel;
+    private javax.swing.JPanel statusPanel;
     // End of variables declaration//GEN-END:variables
 }

@@ -9,7 +9,9 @@ import java.io.IOException;
 public class MazeBuilder {
     public static Maze buildMaze(int floorCount, int cellSize) throws IOException{
         MazeFloor[] floors = buildFloor(floorCount, cellSize);
-        return new Maze(floors);
+        Maze m = new Maze();
+        m.setFloor(floors);
+        return m;
     }
     
     // Build a floor

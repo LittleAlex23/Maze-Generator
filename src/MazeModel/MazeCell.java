@@ -30,6 +30,9 @@ public class MazeCell{
     protected void changeImage(Tile image){
         this.image = image;
     }
+    protected void resetImage(){
+        image = permImage;
+    }
     protected void assignTile(Tile image, Tile perm){
         this.image = image;
         this.permImage = perm;
