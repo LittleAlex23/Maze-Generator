@@ -1,80 +1,79 @@
 package MazeView;
 
+import MazeController.Controller;
 import MazeModel.Maze;
 import MazeModel.Tile;
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- *
- * @author Alexandre
- */
 public class MazeFrame extends javax.swing.JFrame {
-    /**
-     * Creates new form MazeFrame
-     */
+
     private int SIZE;
     private int MAXLEVEL;
     private JLabel[][] tile;
     private ImageIcon[][] image;
-    public MazeFrame() throws IOException{   
+    private Controller controller;
+
+    public MazeFrame() throws IOException {
         initComponents();
-   }
-    public void move(String str, Tile[] pair, int[] coord){
-        int length = (int)Math.ceil(Math.sqrt(mazePanel.getWidth() * mazePanel.getHeight()/(SIZE*SIZE)));
-        image[coord[0]][coord[1]].setImage(pair[0].getImage().getScaledInstance(length, length,  java.awt.Image.SCALE_SMOOTH));
-        image[coord[2]][coord[3]].setImage(pair[1].getImage().getScaledInstance(length, length,  java.awt.Image.SCALE_SMOOTH));
-        
-        tile[coord[0]+1][coord[1]+1].setIcon(image[coord[0]][coord[1]]);
-        tile[coord[2]+1][coord[3]+1].setIcon(image[coord[2]][coord[3]]);
-        
-        tile[coord[0]+1][coord[1]+1].setBackground(pair[0] == Tile.BLACK ? Color.BLACK : Color.WHITE);
-        tile[coord[2]+1][coord[3]+1].setBackground(pair[1] == Tile.BLACK ? Color.BLACK : Color.WHITE);
-        revalidate();    
+    }
+
+    public void move(String str, Tile[] pair, int[] coord) {
+        int length = (int) Math.ceil(Math.sqrt(mazePanel.getWidth() * mazePanel.getHeight() / (SIZE * SIZE)));
+        image[coord[0]][coord[1]].setImage(pair[0].getImage().getScaledInstance(length, length, java.awt.Image.SCALE_SMOOTH));
+        image[coord[2]][coord[3]].setImage(pair[1].getImage().getScaledInstance(length, length, java.awt.Image.SCALE_SMOOTH));
+
+        tile[coord[0] + 1][coord[1] + 1].setIcon(image[coord[0]][coord[1]]);
+        tile[coord[2] + 1][coord[3] + 1].setIcon(image[coord[2]][coord[3]]);
+
+        tile[coord[0] + 1][coord[1] + 1].setBackground(pair[0] == Tile.BLACK ? Color.BLACK : Color.WHITE);
+        tile[coord[2] + 1][coord[3] + 1].setBackground(pair[1] == Tile.BLACK ? Color.BLACK : Color.WHITE);
+        revalidate();
         repaint();
         statusLabel.setText("you are on: " + str);
     }
-    public void updateStat(Tile[][] imageList, String str){
-        int length = (int)Math.ceil(Math.sqrt(mazePanel.getWidth() * mazePanel.getHeight()/(SIZE*SIZE)));
-        for(int i = 0; i < SIZE-2; i++)
-            for(int j = 0; j < SIZE-2; j++){
-                image[i][j].setImage(imageList[i][j].getImage().getScaledInstance(length, length,  java.awt.Image.SCALE_SMOOTH));
-                tile[i+1][j+1].setIcon(image[i][j]);
-                tile[i+1][j+1].setBackground(imageList[i][j] == Tile.BLACK ? Color.BLACK : Color.WHITE);
-                revalidate();    
+
+    public void updateStat(Tile[][] imageList, String str) {
+        int length = (int) Math.ceil(Math.sqrt(mazePanel.getWidth() * mazePanel.getHeight() / (SIZE * SIZE)));
+        for (int i = 0; i < SIZE - 2; i++) {
+            for (int j = 0; j < SIZE - 2; j++) {
+                image[i][j].setImage(imageList[i][j].getImage().getScaledInstance(length, length, java.awt.Image.SCALE_SMOOTH));
+                tile[i + 1][j + 1].setIcon(image[i][j]);
+                tile[i + 1][j + 1].setBackground(imageList[i][j] == Tile.BLACK ? Color.BLACK : Color.WHITE);
+                revalidate();
                 repaint();
             }
+        }
         statusLabel.setText("you are on: " + str);
     }
+
     // Add components to the frame once the size of the maze is determined
-    public void expand(int SIZE, int MAXLEVEL){
+    public void expand(int SIZE, int MAXLEVEL) {
         this.SIZE = SIZE;
         this.MAXLEVEL = MAXLEVEL;
-        mazePanel.setLayout(new GridLayout(SIZE,SIZE));
+        mazePanel.setLayout(new GridLayout(SIZE, SIZE));
         tile = new JLabel[SIZE][SIZE];
-        image = new ImageIcon[SIZE-2][SIZE-2];
-        for(int i = 0; i < SIZE ; i++)
-            for(int j = 0; j < SIZE; j++){
+        image = new ImageIcon[SIZE - 2][SIZE - 2];
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
                 tile[i][j] = new JLabel();
                 tile[i][j].setOpaque(true);
-                if(j == 0 || i == 0 || j == SIZE-1 || i == SIZE - 1)
+                if (j == 0 || i == 0 || j == SIZE - 1 || i == SIZE - 1) {
                     tile[i][j].setBackground(Color.BLACK);
-                else{
-                    image[i-1][j-1] = new ImageIcon();
-                    tile[i][j].setIcon(image[i-1][j-1]);
+                } else {
+                    image[i - 1][j - 1] = new ImageIcon();
+                    tile[i][j].setIcon(image[i - 1][j - 1]);
                 }
                 mazePanel.add(tile[i][j]);
             }
+        }
         add(mazePanel);
         add(statusPanel);
         add(jScrollPane1);
@@ -84,14 +83,11 @@ public class MazeFrame extends javax.swing.JFrame {
         this.setFocusable(true);
         this.requestFocus();
     }
-    public void updateLevel(int currentLevel){
+
+    public void updateLevel(int currentLevel) {
         levelLabel.setText("Floor: " + (currentLevel + 1) + "/" + MAXLEVEL);
     }
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -166,6 +162,12 @@ public class MazeFrame extends javax.swing.JFrame {
         selectPanel.setBackground(new java.awt.Color(204, 204, 255));
         selectPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
+        levelField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                levelFieldActionPerformed(evt);
+            }
+        });
+
         jLabel1.setText("<html>Select Max Floor: </html>");
 
         jComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "DFS", "Prim's Algorithm"}));
@@ -234,21 +236,76 @@ public class MazeFrame extends javax.swing.JFrame {
 
         setBounds(0, 0, 657, 504);
     }// </editor-fold>//GEN-END:initComponents
-  
-    public JTextField getLevelField(){
+
+    public JTextField getLevelField() {
         return levelField;
-    }   
+    }
     private void jComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxActionPerformed
-        JComboBox c = (JComboBox)evt.getSource();
+        JComboBox c = (JComboBox) evt.getSource();
         Maze.algorithmID = c.getSelectedIndex();
     }//GEN-LAST:event_jComboBoxActionPerformed
 
-    public void setGame(){
-        statusLabel.setText("GAME OVER!");
+    private void levelFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_levelFieldActionPerformed
+        try {
+            System.out.println("Generating maze...");
+            int level = Integer.valueOf(levelField.getText());
+            if (5 <= level && level <= 10000) {
+                controller.setLevel(level);
+                expand(11, level);
+                updateLevel(1);
+                updateStat(controller.getTile(), "start");
+                addKeyListener(new KeyList());
+            } else {
+                System.out.println("Not within range");
+            }
+        } catch (NumberFormatException ex) {
+            System.out.println("Invalid number");
+            levelField.setText("");
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }//GEN-LAST:event_levelFieldActionPerformed
+
+    public void setController(Controller controller) {
+        this.controller = controller;
     }
-    /**
-     * @param args the command line arguments
-     */
+
+    private class KeyList extends KeyAdapter {
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            int keyCode = e.getKeyCode();
+            // Show the path to the exit
+            if (keyCode == KeyEvent.VK_Q) {
+                controller.showPath();
+                updateStat(controller.getTile(), controller.getCurrentCell().getPermImageName());
+                return;
+            } // Player resets the maze
+            else if (keyCode == KeyEvent.VK_R) {
+                updateLevel(controller.getLevel());
+                controller.resetCell();
+                controller.init();
+                updateStat(controller.getTile(), controller.getCurrentCell().getPermImageName());
+                return;
+            }
+
+            // The player moves around the maze
+            controller.move(keyCode);
+
+            // Check for certain states after the player moves
+            if (controller.hasFloorChanged()) {
+                updateLevel(controller.getLevel());
+                updateStat(controller.getTile(), controller.getCurrentCell().getPermImageName());
+            } else {
+                move(controller.getCurrentCell().getPermImageName(), controller.getPairs(), controller.getCoord());
+            }
+            // Toggle game over
+            if (controller.isGameOver()) {
+                statusLabel.setText("GAME OVER!");
+                removeKeyListener(this);
+            }
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> jComboBox;

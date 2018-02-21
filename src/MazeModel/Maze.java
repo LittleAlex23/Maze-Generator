@@ -1,14 +1,10 @@
 package MazeModel;
 
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import static MazeModel.MazeFloor.COLUMNS;
 import static MazeModel.MazeFloor.MAXLEVEL;
-/**
- *
- * @author Alexandre
- */
+
 public class Maze {
     private MazeFloor[] floor;
     private MazeCell[][][] allCells;

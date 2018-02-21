@@ -2,10 +2,6 @@ package MazeModel;
 
 import javax.swing.JPanel;
 
-/**
- *
- * @author Alexandre
- */
 public class MazeFloor extends JPanel {
     public static int COLUMNS;
     public static int MAXLEVEL;

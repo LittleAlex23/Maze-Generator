@@ -4,10 +4,6 @@ import java.util.ArrayList;
 import static MazeModel.MazeFloor.COLUMNS;
 import static MazeModel.MazeFloor.MAXLEVEL;
 
-/**
- *
- * @author Alexandre
- */
 public class MazeCell{
     private final ArrayList<MazeCell> neighbor;
     private final int row;

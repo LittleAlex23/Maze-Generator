@@ -1,13 +1,7 @@
 package MazeModel;
 
-
-
 import java.awt.image.BufferedImage;
 
-/**
- *
- * @author Alexandre
- */
 public class SpriteSheet {
     public static SpriteSheet sheet;
     private BufferedImage image;

@@ -2,10 +2,6 @@ package MazeModel;
 
 import java.io.IOException;
 
-/**
- *
- * @author Alexandre
- */
 public class MazeBuilder {
     public static Maze buildMaze(int floorCount, int cellSize) throws IOException{
         MazeFloor[] floors = buildFloor(floorCount, cellSize);

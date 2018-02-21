@@ -5,10 +5,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Stack;
 
-/**
- *
- * @author Alexandre
- */
 public class MazeGenerationAlgorithm {
     private MazeCell[][][] Cell;
     private Stack<MazeCell> stack;
