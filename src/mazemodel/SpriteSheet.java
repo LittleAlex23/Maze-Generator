@@ -1,4 +1,4 @@
-package MazeModel;
+package mazemodel;
 
 import java.awt.image.BufferedImage;
 

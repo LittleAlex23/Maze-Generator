@@ -1,14 +1,15 @@
-package MazeController;
+package mazecontroller;
 
-import MazeModel.Maze;
-import MazeModel.MazeBuilder;
-import MazeModel.MazeCell;
-import MazeModel.Tile;
-import MazeView.MazeFrame;
+import mazemodel.Maze;
+import mazemodel.MazeBuilder;
+import mazemodel.MazeCell;
+import mazemodel.Tile;
+import mazeview.MazeFrame;
+
 import java.io.IOException;
 
 public class Controller {
-    private final MazeFrame _mazeframe;
+    private  MazeFrame _mazeframe;
     private Maze _maze;
     public Controller(MazeFrame mazeframe, Maze maze){
         _mazeframe = mazeframe;
@@ -33,11 +34,8 @@ public class Controller {
     public MazeCell getCurrentCell(){
         return _maze.getCurrentCell();
     }
-    public Tile[] getPairs(){
+    public MazeCell[] getPairs(){
          return _maze.getPairs();
-    }
-    public int[] getCoord(){
-        return _maze.getCoord();
     }
     public void move(int d){
         _maze.move(d);

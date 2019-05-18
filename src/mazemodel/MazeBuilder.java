@@ -1,4 +1,4 @@
-package MazeModel;
+package mazemodel;
 
 import java.io.IOException;
 
@@ -11,7 +11,7 @@ public class MazeBuilder {
     }
     
     // Build a floor
-    private static MazeFloor[] buildFloor(int L, int C){
+    private static MazeFloor[] buildFloor(final int L, final int C){
         MazeFloor.MAXLEVEL = L;
         MazeFloor.COLUMNS = C;
         MazeFloor[] floors = new MazeFloor[L];
@@ -22,20 +22,21 @@ public class MazeBuilder {
     
     // Build a cell
     public static MazeCell[][][] buildCell(MazeFloor[] f, int L, int C){
-        MazeCell[] vertex = new MazeCell[L *((C>>1) *(C>>1) + C)];
-        MazeCell[][][] cells = new MazeCell[L][C][C];
+    	final int index = C>>1;
+        MazeCell[] vertex = new MazeCell[L *(index *index + C)];
+        MazeCell[][][] cellArray = new MazeCell[L][C][C];
         int count = 0;
         for(int i = 0; i < L; i++){
             for(int j = 0; j < C; j++)
                  for(int k = 0; k < C; k++){
-                     cells[i][j][k] = new MazeCell(i, j * C + k);
-                     if(cells[i][j][k].isVertex())
-                        vertex[count++] = cells[i][j][k];
+                     cellArray[i][j][k] = new MazeCell(i, j * C + k);
+                     if(cellArray[i][j][k].isVertex())
+                        vertex[count++] = cellArray[i][j][k];
                  }
-            f[i].fillCells(cells[i]);
+            f[i].fillCell(cellArray[i]);
         }
-        connectCells(vertex, cells);
-        return cells;
+        connectCells(vertex, cellArray);
+        return cellArray;
     }
     // Assign neighbors for each cell
     private static void connectCells(MazeCell[] vertex, MazeCell[][][] cells){

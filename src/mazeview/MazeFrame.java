@@ -1,8 +1,9 @@
-package MazeView;
+package mazeview;
 
-import MazeController.Controller;
-import MazeModel.Maze;
-import MazeModel.Tile;
+import mazemodel.Maze;
+import mazemodel.MazeCell;
+import mazemodel.Tile;
+
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.KeyAdapter;
@@ -11,47 +12,43 @@ import java.io.IOException;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JTextField;
+
+import mazecontroller.Controller;
 
 public class MazeFrame extends javax.swing.JFrame {
-
-    private int SIZE;
+	private static final long serialVersionUID = 1L;
+	private int SIZE;
     private int MAXLEVEL;
     private JLabel[][] tile;
     private ImageIcon[][] image;
     private Controller controller;
-
+    private int length;
     public MazeFrame() throws IOException {
         initComponents();
     }
 
-    public void move(String str, Tile[] pair, int[] coord) {
-        int length = (int) Math.ceil(Math.sqrt(mazePanel.getWidth() * mazePanel.getHeight() / (SIZE * SIZE)));
-        image[coord[0]][coord[1]].setImage(pair[0].getImage().getScaledInstance(length, length, java.awt.Image.SCALE_SMOOTH));
-        image[coord[2]][coord[3]].setImage(pair[1].getImage().getScaledInstance(length, length, java.awt.Image.SCALE_SMOOTH));
-
-        tile[coord[0] + 1][coord[1] + 1].setIcon(image[coord[0]][coord[1]]);
-        tile[coord[2] + 1][coord[3] + 1].setIcon(image[coord[2]][coord[3]]);
-
-        tile[coord[0] + 1][coord[1] + 1].setBackground(pair[0] == Tile.BLACK ? Color.BLACK : Color.WHITE);
-        tile[coord[2] + 1][coord[3] + 1].setBackground(pair[1] == Tile.BLACK ? Color.BLACK : Color.WHITE);
-        revalidate();
+    private void setImage(int x,int y, Tile t) {
+        image[x][y].setImage(t.getImage().getScaledInstance(length, length, java.awt.Image.SCALE_SMOOTH));
+        tile[x+1][y+1].setIcon(image[x][y]);
         repaint();
-        statusLabel.setText("you are on: " + str);
     }
-
-    public void updateStat(Tile[][] imageList, String str) {
-        int length = (int) Math.ceil(Math.sqrt(mazePanel.getWidth() * mazePanel.getHeight() / (SIZE * SIZE)));
+    private void move(String str, MazeCell[] pair) {
+    	Tile[] tile=  {pair[0].getRealTile(), pair[1].getFrontTile()};
+        setImage(pair[0].getX(), pair[0].getY(), tile[0]);
+        setImage(pair[1].getX(), pair[1].getY(), tile[1]);
+        repaint();
+        updateStat(str);
+    }
+    private void updateStat(String str) {
+    	statusLabel.setText("you are on: " + str);
+    }
+    
+    public void paintMaze(Tile[][] imageList, String str) {
         for (int i = 0; i < SIZE - 2; i++) {
-            for (int j = 0; j < SIZE - 2; j++) {
-                image[i][j].setImage(imageList[i][j].getImage().getScaledInstance(length, length, java.awt.Image.SCALE_SMOOTH));
-                tile[i + 1][j + 1].setIcon(image[i][j]);
-                tile[i + 1][j + 1].setBackground(imageList[i][j] == Tile.BLACK ? Color.BLACK : Color.WHITE);
-                revalidate();
-                repaint();
-            }
+            for (int j = 0; j < SIZE - 2; j++)
+            	setImage(i,j,imageList[i][j]);
         }
-        statusLabel.setText("you are on: " + str);
+        updateStat(str);
     }
 
     // Add components to the frame once the size of the maze is determined
@@ -74,10 +71,11 @@ public class MazeFrame extends javax.swing.JFrame {
                 mazePanel.add(tile[i][j]);
             }
         }
-        add(mazePanel);
-        add(statusPanel);
-        add(jScrollPane1);
-        add(selectPanel);
+        length = (int) Math.ceil(Math.sqrt(mazePanel.getWidth() * mazePanel.getHeight() / (SIZE * SIZE)));
+        getContentPane().add(mazePanel);
+        getContentPane().add(statusPanel);
+        getContentPane().add(jScrollPane1);
+        getContentPane().add(selectPanel);
         jComboBox.setEnabled(false);
         levelField.setEnabled(false);
         this.setFocusable(true);
@@ -237,23 +235,21 @@ public class MazeFrame extends javax.swing.JFrame {
         setBounds(0, 0, 657, 504);
     }// </editor-fold>//GEN-END:initComponents
 
-    public JTextField getLevelField() {
-        return levelField;
-    }
     private void jComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxActionPerformed
-        JComboBox c = (JComboBox) evt.getSource();
+        @SuppressWarnings("unchecked")
+		JComboBox<Integer> c = (JComboBox<Integer>) evt.getSource();
         Maze.algorithmID = c.getSelectedIndex();
     }//GEN-LAST:event_jComboBoxActionPerformed
 
     private void levelFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_levelFieldActionPerformed
         try {
-            System.out.println("Generating maze...");
             int level = Integer.valueOf(levelField.getText());
             if (5 <= level && level <= 10000) {
+            	System.out.println("Generating maze...");
                 controller.setLevel(level);
                 expand(11, level);
-                updateLevel(1);
-                updateStat(controller.getTile(), "start");
+                updateLevel(0);
+                paintMaze(controller.getTile(), "magenta");
                 addKeyListener(new KeyList());
             } else {
                 System.out.println("Not within range");
@@ -271,21 +267,20 @@ public class MazeFrame extends javax.swing.JFrame {
     }
 
     private class KeyList extends KeyAdapter {
-
         @Override
         public void keyPressed(KeyEvent e) {
             int keyCode = e.getKeyCode();
             // Show the path to the exit
             if (keyCode == KeyEvent.VK_Q) {
                 controller.showPath();
-                updateStat(controller.getTile(), controller.getCurrentCell().getPermImageName());
+                paintMaze(controller.getTile(), controller.getCurrentCell().getTileName());
                 return;
             } // Player resets the maze
             else if (keyCode == KeyEvent.VK_R) {
                 updateLevel(controller.getLevel());
                 controller.resetCell();
                 controller.init();
-                updateStat(controller.getTile(), controller.getCurrentCell().getPermImageName());
+                paintMaze(controller.getTile(), controller.getCurrentCell().getTileName());
                 return;
             }
 
@@ -295,9 +290,9 @@ public class MazeFrame extends javax.swing.JFrame {
             // Check for certain states after the player moves
             if (controller.hasFloorChanged()) {
                 updateLevel(controller.getLevel());
-                updateStat(controller.getTile(), controller.getCurrentCell().getPermImageName());
+                paintMaze(controller.getTile(), controller.getCurrentCell().getTileName());
             } else {
-                move(controller.getCurrentCell().getPermImageName(), controller.getPairs(), controller.getCoord());
+                move(controller.getCurrentCell().getTileName(), controller.getPairs());
             }
             // Toggle game over
             if (controller.isGameOver()) {

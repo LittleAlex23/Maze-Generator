@@ -1,8 +1,9 @@
-package MazeModel;
+package mazemodel;
+
+import static mazemodel.MazeFloor.COLUMNS;
+import static mazemodel.MazeFloor.MAXLEVEL;
 
 import java.util.ArrayList;
-import static MazeModel.MazeFloor.COLUMNS;
-import static MazeModel.MazeFloor.MAXLEVEL;
 
 public class MazeCell{
     private final ArrayList<MazeCell> neighbor;
@@ -10,8 +11,8 @@ public class MazeCell{
     private final int column;
     private final int level;
     private MazeCell previous;
-    private Tile image;
-    private Tile permImage;
+    private Tile frontImage;
+    private Tile realImage;
     private final int ID;
     protected MazeCell(int level, int ID){
         neighbor = new ArrayList<>(4);
@@ -23,32 +24,32 @@ public class MazeCell{
     protected boolean isVertex(){
         return row%2 == 0 && column%2 == 0;
     }
-    protected void changeImage(Tile image){
-        this.image = image;
+    protected void setImage(Tile image){
+        this.frontImage = image;
     }
     protected void resetImage(){
-        image = permImage;
+        frontImage = realImage;
     }
-    protected void assignTile(Tile image, Tile perm){
-        this.image = image;
-        this.permImage = perm;
+    protected void assignTile(Tile front, Tile real){
+        this.frontImage = front;
+        this.realImage = real;
     }
     protected void assignTile(Tile image){
-        this.image = permImage = image;
+        this.frontImage = realImage = image;
     }
     protected void resetTile(){
-        if(permImage == null || !permImage.equals(Tile.BLACK))
-            this.image = permImage = Tile.BLACK;
+        if(realImage == null || !realImage.equals(Tile.BLACK))
+            this.frontImage = realImage = Tile.BLACK;
     }
     
     // Return the list of neighbors of current cell;
     protected ArrayList<MazeCell> getNeighbor(){
         return neighbor;
     }
-    protected int getX(){
+    public int getX(){
         return row;
     }
-    protected int getY(){
+    public int getY(){
         return column;
     }
     // Return the level the cell is in
@@ -93,17 +94,17 @@ public class MazeCell{
         if(level-1 >= 0)
             neighbor.add(cell[level-1][row][column]);
     }
-    protected Tile getTile(){
-        if(image == null)
-            image = permImage = Tile.BLACK;
-        return image;
+    public Tile getFrontTile(){
+        if(frontImage == null)
+            frontImage = realImage = Tile.BLACK;
+        return frontImage;
     }
-    public String getPermImageName(){
-        if(permImage == null)
-            image = permImage = Tile.BLACK;
-        return permImage.getName();
+    public String getTileName(){
+        if(realImage == null)
+            frontImage = realImage = Tile.BLACK;
+        return realImage.getName();
     }
-    protected Tile getPermImage(){
-        return permImage;
+    public Tile getRealTile(){
+        return realImage;
     }
 }

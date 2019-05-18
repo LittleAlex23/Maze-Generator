@@ -1,27 +1,29 @@
-package MazeModel;
+package mazemodel;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Stack;
 
 public class MazeGenerationAlgorithm {
-    private MazeCell[][][] Cell;
+    private MazeCell[][][] cell;
     private Stack<MazeCell> stack;
     private boolean[][][] visited;
     
     // Prim's algorithm
     public void runPrim(MazeCell[][][] cell, MazeCell source){
-        this.Cell = cell;
+        this.cell = cell;
         visited = new boolean[cell.length][cell[0].length][cell[0][0].length];
         visited[0][0][0] = true;
+        boolean[][][] candidateList = new boolean[cell.length][cell[0].length][cell[0][0].length];
         LinkedList<MazeCell> openList = new LinkedList<>();
-        ArrayList<MazeCell> neighbor;
+        List<MazeCell> neighbor;
         MazeCell current;
         openList.addAll(source.getNeighbor());
+
         boolean toggle = false;
         while(!openList.isEmpty()){
-            
             // Shuffle the cells
             Collections.shuffle(openList);
             
@@ -33,25 +35,26 @@ public class MazeGenerationAlgorithm {
             neighbor = current.getNeighbor();
             Collections.shuffle(neighbor);
             
-            // Add all unvisited neighbors
+            // Add all unvisited neighbors to openList
             for(MazeCell n : neighbor){
-                if(!visited[n.getLevel()][n.getX()][n.getY()] && !openList.contains(n))
+                if(!visited[n.getLevel()][n.getX()][n.getY()] && !candidateList[n.getLevel()][n.getX()][n.getY()]) {
                     openList.add(n);
+                    candidateList[n.getLevel()][n.getX()][n.getY()] = true;
+                }
             }
-            
             // Prevent the ending cell image to be WHITE
-            if(!current.getPermImageName().equals("red"))
+            if(current.getRealTile() != Tile.END)
                 current.assignTile(Tile.WHITE);
             
             // Connect the current cell to a random visited neighbor, if possible
-            ArrayList<MazeCell> g = current.getNeighbor();
+            List<MazeCell> g = current.getNeighbor();
             Collections.shuffle(g);
             for(MazeCell n : g){
                 if(visited[n.getLevel()][n.getX()][n.getY()]){
                     
                     // Disallow the starting cell to be connected to its top neighbor
-                    if((n.getPermImageName().equals("magenta") && current.getLevel() == 0) || (toggle && 
-                            !n.getPermImageName().equals("magenta"))){
+                    if((n.getRealTile() == Tile.ON_START && current.getLevel() == 0) || (toggle && 
+                            n.getRealTile() != Tile.ON_START)){
                         current.setPrevious(n);
                         connectVertex(current, n);
                         break;
@@ -62,7 +65,7 @@ public class MazeGenerationAlgorithm {
         }
     }
     public void runDFS(MazeCell[][][] cell, MazeCell source){
-        this.Cell = cell;
+        this.cell = cell;
         visited = new boolean [cell.length][cell[0].length][cell[0][0].length];
         stack = new Stack<>();
         stack.push(source);
@@ -82,7 +85,7 @@ public class MazeGenerationAlgorithm {
             // Add all cell's unvisited neighbors to the list;
             for(MazeCell n : neighbor){
                 if(!visited[n.getLevel()][n.getX()][n.getY()]){
-                    if(!meetEnd || !n.getPermImageName().equals("red")){
+                    if(!meetEnd || n.getRealTile() != Tile.END){
                         hasNeighbor = true;
                         openList.add(n);
                     }
@@ -96,7 +99,7 @@ public class MazeGenerationAlgorithm {
                 stack.push(n);
                 
                 // Check if the neighbor is not the end of the maze
-                if(!n.getPermImageName().equals("red"))
+                if(n.getRealTile() != Tile.END)
                     n.assignTile(Tile.WHITE);
                 else
                     meetEnd = true;
@@ -110,6 +113,11 @@ public class MazeGenerationAlgorithm {
                 p = stack.pop();
         }
     }
+    private void connect(MazeCell current, MazeCell middleCell ,MazeCell previous) {
+    	current.setPrevious(middleCell);
+        middleCell.setPrevious(previous);
+        middleCell.assignTile(Tile.WHITE);
+    }
     // Connect the two cells
     public void connectVertex(MazeCell current, MazeCell previous){
         int cX = current.getX();
@@ -122,32 +130,30 @@ public class MazeGenerationAlgorithm {
         if(level == 0){
             int xDiff = cX - previous.getX();
             int yDiff = cY - previous.getY();
-            MazeCell middleCell;
+            MazeCell middle;
 
             // ON THE SAME ROW
             if(xDiff != 0)                
-                middleCell = (xDiff > 0 ) ? Cell[cL][cX-1][cY] : Cell[cL][cX+1][cY];
+                middle = (xDiff > 0 ) ? cell[cL][cX-1][cY] : cell[cL][cX+1][cY];
             
             // ON THE SAME COLUMN
             else 
-                middleCell = (yDiff > 0) ? Cell[cL][cX][cY - 1] : Cell[cL][cX][cY + 1];
+                middle = (yDiff > 0) ? cell[cL][cX][cY - 1] : cell[cL][cX][cY + 1];
             
-            current.setPrevious(middleCell);
-            middleCell.setPrevious(previous);
-            middleCell.assignTile(Tile.WHITE);
+            connect(current, middle, previous);
         }
         else {
             // GOING UP
             if(level == 1){
-                if(current.getPermImageName().equals("red"))
+                if(current.getRealTile() == Tile.END)
                     previous.assignTile(Tile.UP);
                 // Can go either up or down from the current cell
-                else if(previous.getPermImageName().equals("orange")){
+                else if(previous.getRealTile() == Tile.DOWN){
                     current.assignTile(Tile.DOWN);
                     previous.assignTile(Tile.UP_OR_DOWN);
                 }
                 // Can only go up
-                else if(current.getPermImageName().equals("white")){
+                else if(current.getRealTile() == Tile.WHITE){
                     current.assignTile(Tile.DOWN);
                     previous.assignTile(Tile.UP);
                 }
@@ -156,15 +162,15 @@ public class MazeGenerationAlgorithm {
             // GOING DOWN
             else {
                 
-                if(previous.getPermImageName().equals("red"))
+                if(previous.getRealTile() == Tile.END)
                     return;
                 // Can go either up or down from the current cell
-                if(previous.getPermImageName().equals("pink")){
+                if(previous.getRealTile() == Tile.UP){
                     current.assignTile(Tile.UP);
                     previous.assignTile(Tile.UP_OR_DOWN);
                 }
                 // Can only go down
-                else if(current.getPermImageName().equals("white")){
+                else if(current.getRealTile() == Tile.WHITE){
                     current.assignTile(Tile.UP);
                     previous.assignTile(Tile.DOWN);
                 }
