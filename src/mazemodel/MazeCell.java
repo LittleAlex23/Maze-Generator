@@ -1,6 +1,6 @@
 package mazemodel;
 
-import static mazemodel.MazeFloor.COLUMNS;
+import static mazemodel.MazeFloor.SIZE;
 import static mazemodel.MazeFloor.MAXLEVEL;
 
 import java.util.ArrayList;
@@ -15,11 +15,11 @@ public class MazeCell{
     private Tile realImage;
     private final int ID;
     protected MazeCell(int level, int ID){
-        neighbor = new ArrayList<>(4);
-        this.level = level;
+    	this.level = level;
         this.ID = ID;
-        row = ID/COLUMNS;
-        column = ID%COLUMNS;
+        neighbor = new ArrayList<>(6);
+        row = ID/SIZE;
+        column = ID%SIZE;
     }
     protected boolean isVertex(){
         return row%2 == 0 && column%2 == 0;
@@ -34,7 +34,7 @@ public class MazeCell{
         this.frontImage = front;
         this.realImage = real;
     }
-    protected void assignTile(Tile image){
+    public void setFrontTile(Tile image){
         this.frontImage = realImage = image;
     }
     protected void resetTile(){
@@ -42,8 +42,7 @@ public class MazeCell{
             this.frontImage = realImage = Tile.BLACK;
     }
     
-    // Return the list of neighbors of current cell;
-    protected ArrayList<MazeCell> getNeighbor(){
+    public ArrayList<MazeCell> getNeighbor(){
         return neighbor;
     }
     public int getX(){
@@ -52,18 +51,18 @@ public class MazeCell{
     public int getY(){
         return column;
     }
-    // Return the level the cell is in
-    protected int getLevel(){
+    
+    public int getLevel(){
         return level;
     }
     
     // For backtracking
-    protected void setPrevious(MazeCell previous){
+    public void setPrevious(MazeCell previous){
         this.previous = previous;
     }
     
     // Assign the cell the predecessor cell 
-    protected MazeCell getPrevious(){
+    public MazeCell getPrevious(){
         return previous;
     }
     
@@ -79,10 +78,10 @@ public class MazeCell{
         if(row-2 >= 0)
             neighbor.add(cell[level][row - 2][column]);
         // EAST NEIGHBOR
-        if(column+2 < COLUMNS)
+        if(column+2 < SIZE)
             neighbor.add(cell[level][row][column+2]);
         // SOUTH NEIGHBOR
-        if(row+2 < COLUMNS)
+        if(row+2 < SIZE)
             neighbor.add(cell[level][row + 2][column]);
         // WEST NEIGHBOR
         if(column-2 >= 0)

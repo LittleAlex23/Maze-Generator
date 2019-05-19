@@ -4,14 +4,14 @@ import javax.swing.JPanel;
 
 public class MazeFloor extends JPanel {
 	private static final long serialVersionUID = 1L;
-	public static int COLUMNS;
+	public static int SIZE;
     public static int MAXLEVEL;
     private MazeCell[][] floorCells;
     private final Tile[][] floorImage;
     protected MazeFloor(){
-        floorImage = new Tile[COLUMNS][COLUMNS];
+        floorImage = new Tile[SIZE][SIZE];
     }
-    public void fillCell(MazeCell[][] cells){
+    public void fillFloor(MazeCell[][] cells){
         floorCells = cells;
     }
     // Return the cells for this floor
@@ -25,7 +25,7 @@ public class MazeFloor extends JPanel {
                 floorImage[i][j] = floorCells[i][j].getFrontTile();
     }
     // Return the cell images for this floor
-    protected Tile[][] getTile(){
+    protected Tile[][] getFloorTile(){
         return floorImage;
     }
 }

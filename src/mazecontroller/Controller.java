@@ -19,11 +19,11 @@ public class Controller {
     public final void init(){
         _mazeframe.setController(this);
     }
-    public void setLevel(int levels) throws IOException{
+    public void setLevel(int levels){
         _maze = MazeBuilder.buildMaze(levels, 9);
     }
     public Tile[][] getTile(){
-        return _maze.getTile();
+        return _maze.getFloorTile();
     }
     public int getLevel(){
         return _maze.getLevel();
@@ -37,7 +37,7 @@ public class Controller {
     public MazeCell[] getPairs(){
          return _maze.getPairs();
     }
-    public void move(int d){
+    public void move(char d){
         _maze.move(d);
     }
     public void resetCell(){

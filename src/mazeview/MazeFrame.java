@@ -51,27 +51,32 @@ public class MazeFrame extends javax.swing.JFrame {
         updateStat(str);
     }
 
-    // Add components to the frame once the size of the maze is determined
-    public void expand(int SIZE, int MAXLEVEL) {
-        this.SIZE = SIZE;
-        this.MAXLEVEL = MAXLEVEL;
-        mazePanel.setLayout(new GridLayout(SIZE, SIZE));
-        tile = new JLabel[SIZE][SIZE];
+    private boolean  isBorder(int i, int j) {
+    	return j == 0 || i == 0 || j == SIZE - 1 || i == SIZE - 1;
+    }
+    private void setImage() {
+    	tile = new JLabel[SIZE][SIZE];
         image = new ImageIcon[SIZE - 2][SIZE - 2];
-        for (int i = 0; i < SIZE; i++) {
+    	for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 tile[i][j] = new JLabel();
                 tile[i][j].setOpaque(true);
-                if (j == 0 || i == 0 || j == SIZE - 1 || i == SIZE - 1) {
+                if (isBorder(i,j)) {
                     tile[i][j].setBackground(Color.BLACK);
                 } else {
-                    image[i - 1][j - 1] = new ImageIcon();
-                    tile[i][j].setIcon(image[i - 1][j - 1]);
+                    tile[i][j].setIcon(image[i - 1][j - 1] = new ImageIcon());
                 }
                 mazePanel.add(tile[i][j]);
             }
         }
+    }
+    // Add components to the frame once the size of the maze is determined
+    public void expand(final int SIZE, final int MAXLEVEL) {
+        this.SIZE = SIZE;
+        this.MAXLEVEL = MAXLEVEL;
         length = (int) Math.ceil(Math.sqrt(mazePanel.getWidth() * mazePanel.getHeight() / (SIZE * SIZE)));
+        mazePanel.setLayout(new GridLayout(SIZE, SIZE));
+        setImage();
         getContentPane().add(mazePanel);
         getContentPane().add(statusPanel);
         getContentPane().add(jScrollPane1);
@@ -246,22 +251,22 @@ public class MazeFrame extends javax.swing.JFrame {
             int level = Integer.valueOf(levelField.getText());
             if (5 <= level && level <= 10000) {
             	System.out.println("Generating maze...");
-                controller.setLevel(level);
-                expand(11, level);
-                updateLevel(0);
-                paintMaze(controller.getTile(), "magenta");
-                addKeyListener(new KeyList());
+                start(level);
             } else {
                 System.out.println("Not within range");
             }
         } catch (NumberFormatException ex) {
             System.out.println("Invalid number");
             levelField.setText("");
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
         }
     }//GEN-LAST:event_levelFieldActionPerformed
-
+    public void start(int level) {
+		controller.setLevel(level);
+		expand(11, level);
+        updateLevel(0);
+        paintMaze(controller.getTile(), "start");
+        addKeyListener(new KeyList());
+    }
     public void setController(Controller controller) {
         this.controller = controller;
     }
@@ -275,6 +280,7 @@ public class MazeFrame extends javax.swing.JFrame {
                 controller.showPath();
                 paintMaze(controller.getTile(), controller.getCurrentCell().getTileName());
                 return;
+                
             } // Player resets the maze
             else if (keyCode == KeyEvent.VK_R) {
                 updateLevel(controller.getLevel());
@@ -285,7 +291,7 @@ public class MazeFrame extends javax.swing.JFrame {
             }
 
             // The player moves around the maze
-            controller.move(keyCode);
+            controller.move((char)keyCode);
 
             // Check for certain states after the player moves
             if (controller.hasFloorChanged()) {
